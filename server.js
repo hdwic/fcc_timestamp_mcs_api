@@ -33,17 +33,33 @@ app.get("/api/hello", function (req, res) {
 });
 
 
+app.get('/api/', function(req,res) {
+	const datez = new Date()
+	let outputDateMS = Date.parse(datez)
+	
+	let outputJson = 
+			{
+				unix 	: outputDateMS,
+				utc 	: datez.toUTCString()	
+			}
+	res.json(outputJson)
+	
+})
+
+
+
 app.get("/api/:date", function (req, res) {
 	
 	let input =  req.params.date.toString()
 	let output;
-	
-	const func = (input) => {
+
+		const func = (input) => {
     	// let output ;
     	let dateMS = Date.parse(input) 
     	let datecek1 = new Date(dateMS)
     	let datecek2 = new Date(parseInt(input)) 
     	let datecek3 = new Date(input)
+		
     	output = 
     		{
         		input : input, 
@@ -54,24 +70,18 @@ app.get("/api/:date", function (req, res) {
     		}
     
     		console.log('========================================')
-    		// console.log(`input : ${input}`)
-
-    		// console.log(`date milisecond: ${dateMS}`)
-    		// console.log(`date cek-1: ${datecek1}`)
-
-    		// console.log(`date cek-2: ${datecek2}`)
-    		// console.log(`date cek-3: ${datecek3}`)
-   		 // // console.log(`date another-2 = ${new Date(datecek2)}`)
-    		console.log(output)
-    		console.log('========================================')
+			console.log(`input : ${input}`)
 			console.log(`typeof output.dateMS : ${typeof output.dateMS}`)
 			console.log(`output.input.toString() : ${output.input.toString()} `)
 			console.log(`Date.parse(datecek2).toString() : ${Date.parse(datecek2).toString()}`)
-    		console.log('========================================')
+			console.log('========================================')
 
     return output
 
 }
+	
+
+	
 	func(req.params.date.toString())
 	
 		if (
@@ -82,44 +92,55 @@ app.get("/api/:date", function (req, res) {
 		)
 			{
 				
-				res.json({
-					error : output.datecek1.toString()									  
-				})
+				let outputJson ={	error : output.datecek1.toString() }									  
+				
+				res.json(outputJson)
 			}
 	
 	else  if (
-		// output.dateMS == 'Invalid Date' && 
-		// output.datecek1 == 'Invalid Date' && 
-		// output.datecek2 == 'Invalid Date' && 
-		// output.datecek3 == 'Invalid Date'
 		isValidDate(req.params.date.toString())
 		)
 			{
 				let dateMS = Date.parse(input) 
-    			let datecek1 = new Date(dateMS)
-				res.json({
-					unix : dateMS,
-					utc : datecek1.toString()
+    			let datecek1 = new Date(req.params.date)
+				
+				
+				let outputJson = {
+					unix : parseInt(dateMS),
+					utc : datecek1.toUTCString()
 									  
-				})
+				}
+				
+				res.json(outputJson)
 			}
 	
 	 else if (
 		
-		!isValidDate(req.params.date.toString())
-		)
+		
+		 (/^-?\d+\.?\d*$/.test(req.params.date))   //cek input if it contain only digit
+		
+	 )
 			{
 				let datecek2 = new Date(parseInt(req.params.date.toString()))
-				res.json(
+				let outputJson = 
 					{
-						input : req.params.date.toString(),
-						 date : datecek2.toString()
+						unix : parseInt(req.params.date),
+						utc : datecek2.toUTCString()
 					}
-				)
-			}	
+				
+				
+				res.json(outputJson)
+			}
+	else {
+		let outputJson = 
+					{
+						unix : Date.parse(req.params.date),
+						utc : new Date(req.params.date).toUTCString()
+					}
+		res.json(outputJson)
+	}			
 
 })
-
 
 
 // listen for requests :)
